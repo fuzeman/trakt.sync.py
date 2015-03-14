@@ -1,118 +1,18 @@
+import trakt_sync.cache.enums as enums
+
 from trakt import Trakt
 from trakt.core.helpers import from_iso8601
 
 
 class Cache(object):
-    class Media(object):
-        All         = 0x00
-        Movies      = 0x01
-        Shows       = 0x02
-        Seasons     = 0x04
-        Episodes    = 0x08
-
-        __map__ = None
-
-        @classmethod
-        def get(cls, key):
-            if cls.__map__ is None:
-                cls.__map__ = {
-                    Cache.Media.Movies:     'movies',
-                    Cache.Media.Shows:      'shows',
-                    Cache.Media.Seasons:    'seasons',
-                    Cache.Media.Episodes:   'episodes'
-                }
-
-            return cls.__map__.get(key)
-
-    class Data(object):
-        All         = 0x00
-        Collection  = 0x01
-        Playback    = 0x02
-        Ratings     = 0x04
-        Watched     = 0x08
-        Watchlist   = 0x16
-
-        __attributes__ = None
-
-        @classmethod
-        def initialize(cls):
-            if cls.__attributes__:
-                return
-
-            cls.__attributes__ = {
-                Cache.Data.Collection: {
-                    'interface': 'sync/collection',
-                    'timestamp': 'collected_at'
-                },
-                Cache.Data.Playback: {
-                    'interface': 'sync/playback',
-                    'timestamp': 'paused_at'
-                },
-                Cache.Data.Ratings: {
-                    'interface': 'sync/ratings',
-                    'timestamp': 'rated_at'
-                },
-                Cache.Data.Watched: {
-                    'interface': 'sync/watched',
-                    'timestamp': 'watched_at'
-                },
-                Cache.Data.Watchlist: {
-                    'interface': 'sync/watchlist',
-                    'timestamp': 'watchlisted_at'
-                }
-            }
-
-        @classmethod
-        def get_interface(cls, key):
-            return cls.get_attribute(key, 'interface')
-
-        @classmethod
-        def get_timestamp_key(cls, key):
-            return cls.get_attribute(key, 'timestamp')
-
-        @classmethod
-        def get_attribute(cls, key, attribute):
-            cls.initialize()
-
-            attributes = cls.__attributes__.get(key)
-
-            if not attributes:
-                return None
-
-            return attributes.get(attribute)
+    Data = enums.Data
+    Media = enums.Media
 
     def __init__(self, storage, media, data):
         self.storage = storage
 
-        self.media = self._parse_enum(media, Cache.Media)
-        self.data = self._parse_enum(data, Cache.Data)
-
-    @classmethod
-    def _parse_enum(cls, value, options):
-        options = cls._parse_options(options)
-
-        result = []
-
-        for k, v in options.items():
-            if type(v) is not int or v == 0:
-                continue
-
-            if value == 0 or (value & v) == v:
-                result.append(v)
-
-        return result
-
-    @staticmethod
-    def _parse_options(options):
-        result = {}
-
-        for key in dir(options):
-            if key.startswith('_'):
-                continue
-
-            result[key] = getattr(options, key)
-
-        return result
+        self.media = Cache.Media.parse(media)
+        self.data = Cache.Data.parse(data)
 
     def refresh(self, username):
         activities = Trakt['sync'].last_activities()
