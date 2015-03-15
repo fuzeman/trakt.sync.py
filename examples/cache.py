@@ -16,6 +16,15 @@ def print_details(cache):
 
 
 if __name__ == '__main__':
+    # Simple in-memory storage interface
+    storage = {}
+
+    def i_storage(name):
+        if name not in storage:
+            storage[name] = {}
+
+        return storage[name]
+
     # Configure
     Trakt.configuration.defaults.client(
         id=os.environ.get('CLIENT_ID'),
@@ -36,9 +45,7 @@ if __name__ == '__main__':
     username = (settings or {}).get('user', {}).get('username')
 
     # Build cache
-    storage = {}
-
-    cache = Cache(storage, Cache.Media.All, Cache.Data.All)
+    cache = Cache(Cache.Media.All, Cache.Data.All, i_storage)
 
     while True:
         cache.refresh(username)
