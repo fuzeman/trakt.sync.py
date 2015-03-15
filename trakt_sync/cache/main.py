@@ -8,8 +8,11 @@ class Cache(object):
     Data = enums.Data
     Media = enums.Media
 
-    def __init__(self, storage, media, data):
-        self.storage = storage
+    def __init__(self, media, data, i_storage):
+        self.i_storage = i_storage
+
+        self.collections = self.i_storage('collections')
+        self.stores = {}
 
         self.media = Cache.Media.parse(media)
         self.data = Cache.Data.parse(data)
@@ -21,7 +24,7 @@ class Cache(object):
             media = Cache.Media.get(m)
 
             for d in self.data:
-                collection = self._get(username, media)
+                collection = self._get_collection(username, media)
 
                 timestamp_key = Cache.Data.get_timestamp_key(d)
 
@@ -36,14 +39,14 @@ class Cache(object):
                     continue
 
                 # Update timestamp in cache to `current`
-                collection = self._get(username, media)
+                collection = self._get_collection(username, media)
                 collection['timestamps'][media][timestamp_key] = current
 
     def fetch(self, username, data, media):
         interface = Cache.Data.get_interface(data)
         method = Cache.Media.get(media)
 
-        collection = self._get(username, method)
+        collection = self._get_collection(username, method)
 
         # Retrieve function (`method`) from `interface`
         func = getattr(Trakt[interface], method, None)
@@ -63,10 +66,10 @@ class Cache(object):
         return True
 
     def __getitem__(self, key):
-        if key not in self.storage:
+        if key not in self.collections:
             return None
 
-        collection = self.storage[key]
+        collection = self.collections[key]
 
         if 'store' not in collection:
             return None
@@ -80,16 +83,15 @@ class Cache(object):
 
         return username, media
 
-    def _get(self, username, media):
+    def _get_collection(self, username, media):
         key = self._build_key(username, media)
 
-        if key not in self.storage:
-            self.storage[key] = {}
+        if key not in self.collections:
+            self.collections[key] = {}
 
-        collection = self.storage[key]
+        collection = self.collections[key]
 
-        if 'store' not in collection:
-            collection['store'] = {}
+        collection['store'] = self._get_store(username, media)
 
         if 'timestamps' not in collection:
             collection['timestamps'] = {}
@@ -98,6 +100,14 @@ class Cache(object):
             collection['timestamps'][media] = {}
 
         return collection
+
+    def _get_store(self, username, media):
+        key = self._build_key(username, media)
+
+        if key not in self.stores:
+            self.stores[key] = self.i_storage('stores.%s.%s' % (username, media))
+
+        return self.stores[key]
 
     @staticmethod
     def _get_timestamp(activities, data, media):
