@@ -1,8 +1,22 @@
-try:
-    from trakt_sync.cache.backends.klepto_ import KleptoBackend
-except ImportError, ex:
-    KleptoBackend = None
+import logging
 
-    print 'Unable to import "KleptoBackend" - %s', ex
+log = logging.getLogger(__name__)
 
-__all__ = ['KleptoBackend']
+
+def import_backend(module, name):
+    try:
+        m = __import__(module, fromlist=[name])
+
+        return getattr(m, name, None)
+    except ImportError, ex:
+        log.warn('Unable to import %r - %s', name, ex, exc_info=True)
+        return None
+
+KleptoBackend = import_backend('trakt_sync.cache.backends.klepto_', 'KleptoBackend')
+StashBackend = import_backend('trakt_sync.cache.backends.stash_', 'StashBackend')
+
+
+__all__ = [
+    'KleptoBackend',
+    'StashBackend'
+]

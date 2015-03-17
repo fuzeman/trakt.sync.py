@@ -2,28 +2,41 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from trakt import Trakt
+from trakt_sync.cache.backends import StashBackend
 from trakt_sync.cache.main import Cache
 
+from stash.archives.a_sqlite import SqliteArchive
 import os
+import sqlite3
 
 
 def print_details(cache):
     movies = cache[(username, 'movies')]
     shows = cache[(username, 'shows')]
 
-    print 'len(cache[(%r, "movies")]) = %d' % (username, len(movies))
-    print 'len(cache[(%r, "shows")]) = %d ' % (username, len(shows))
+    print 'len(movies.archive) = %d ' % len(movies.archive)
+    print 'len(movies.cache) = %d ' % len(movies.cache)
+
+    print 'len(shows.archive) = %d ' % len(shows.archive)
+    print 'len(shows.cache) = %d ' % len(shows.cache)
+
+def save(cache):
+    # Purge collection stores
+    for key, collection in cache.collections.cache.items():
+        collection['store'].save()
+
+    # Purge collections
+    cache.collections.save()
 
 
 if __name__ == '__main__':
-    # Simple in-memory storage interface
-    data = {}
+    conn = sqlite3.connect('stash_sqlite.db')
 
+    # SQLite storage interface for cache
     def storage(name):
-        if name not in data:
-            data[name] = {}
-
-        return data[name]
+        return StashBackend(
+            SqliteArchive(conn, name), 'lru:///', 'pickle:///'
+        )
 
     # Configure
     Trakt.configuration.defaults.client(
@@ -44,6 +57,9 @@ if __name__ == '__main__':
     settings = Trakt['users/settings'].get()
     username = (settings or {}).get('user', {}).get('username')
 
+    if not username:
+        exit(1)
+
     # Build cache
     cache = Cache(Cache.Media.All, Cache.Data.All, storage)
 
@@ -51,4 +67,6 @@ if __name__ == '__main__':
         cache.refresh(username)
 
         print_details(cache)
+        save(cache)
+
         raw_input('[refresh]')

@@ -8,10 +8,10 @@ class Cache(object):
     Data = enums.Data
     Media = enums.Media
 
-    def __init__(self, media, data, i_storage):
-        self.i_storage = i_storage
+    def __init__(self, media, data, storage):
+        self.storage = storage
 
-        self.collections = self.i_storage('collections')
+        self.collections = self.storage('collections')
         self.stores = {}
 
         self.media = Cache.Media.parse(media)
@@ -105,7 +105,7 @@ class Cache(object):
         key = self._build_key(username, media)
 
         if key not in self.stores:
-            self.stores[key] = self.i_storage('stores.%s.%s' % (username, media))
+            self.stores[key] = self.storage('stores.%s.%s' % (username, media))
 
         return self.stores[key]
 
