@@ -12,11 +12,10 @@ def import_backend(module, name):
         log.warn('Unable to import %r - %s', name, ex, exc_info=True)
         return None
 
-KleptoBackend = import_backend('trakt_sync.cache.backends.klepto_', 'KleptoBackend')
+
 StashBackend = import_backend('trakt_sync.cache.backends.stash_', 'StashBackend')
 
 
 __all__ = [
-    'KleptoBackend',
     'StashBackend'
 ]
