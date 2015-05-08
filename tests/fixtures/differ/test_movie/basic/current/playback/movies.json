@@ -1,0 +1,32 @@
+[
+  {
+    "progress": 65.0,
+    "paused_at": "2015-02-09T05:56:58.000Z",
+    "type": "movie",
+    "movie": {
+      "title": "TRON: Legacy",
+      "year": 2010,
+      "ids": {
+        "trakt": 12601,
+        "slug": "tron-legacy-2010",
+        "imdb": "tt1104001",
+        "tmdb": 20526
+      }
+    }
+  },
+  {
+    "progress": 69.0,
+    "paused_at": "2015-02-09T05:56:58.000Z",
+    "type": "movie",
+    "movie": {
+      "title": "The Imitation Game",
+      "year": 2014,
+      "ids": {
+        "trakt": 127828,
+        "slug": "the-imitation-game-2014",
+        "imdb": "tt2084970",
+        "tmdb": 205596
+      }
+    }
+  }
+]

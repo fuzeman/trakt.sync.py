@@ -35,44 +35,64 @@ class Cache(object):
                     # Latest data already cached
                     continue
 
-                if not self.fetch(username, d, m):
+                # Fetch latest data
+                store = self.fetch(d, m)
+
+                if store is None:
                     continue
 
-                # Update timestamp in cache to `current`
-                collection = self._get_collection(username, media)
-                collection['timestamps'][media][timestamp_key] = current
+                # Find changes
+                changes = self.diff(collection['store'], store)
 
-    def fetch(self, username, data, media):
+                # Update timestamp in cache to `current`
+                # collection = self._get_collection(username, media)
+                # collection['store'].update(store)
+                # collection['timestamps'][media][timestamp_key] = current
+
+                yield (m, d), changes
+
+    def fetch(self, data, media):
         interface = Cache.Data.get_interface(data)
         method = Cache.Media.get(media)
-
-        collection = self._get_collection(username, method)
 
         # Retrieve function (`method`) from `interface`
         func = getattr(Trakt[interface], method, None)
 
         if func is None:
-            return False
+            return None
 
         # Execute `func` (fetch data from trakt.tv)
         print 'Fetching "%s"' % '/'.join([interface, method])
 
         try:
-            func(store=collection['store'], exceptions=True)
+            return func(exceptions=True)
         except Exception, ex:
             print type(ex), ex
-            return False
 
-        return True
+        return None
+
+    def diff(self, last_items, current_items):
+        if not last_items:
+            # No `last` data stored
+            return current_items, {}
+
+        # Retrieve keys
+        keys_last = last_items.archive.keys()
+        keys_current = current_items.keys()
+
+        # Find added/removed keys
+        keys_added = [k for k in keys_current if k not in keys_last]
+        keys_removed = [k for k in keys_last if k not in keys_current]
+
+        # TODO find changes
+        return dict([
+            (k, current_items[k]) for k in keys_added
+        ]), dict([
+            (k, last_items[k]) for k in keys_removed
+        ])
 
     def __getitem__(self, key):
-        if key not in self.collections:
-            return None
-
-        collection = self.collections[key]
-
-        if 'store' not in collection:
-            return None
+        collection = self._get_collection(*key)
 
         return collection['store']
 

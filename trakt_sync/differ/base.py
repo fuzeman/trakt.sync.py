@@ -1,0 +1,2 @@
+class Differ(object):
+    pass

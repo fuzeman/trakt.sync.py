@@ -5,7 +5,7 @@ from stash import Stash
 
 class StashBackend(Backend):
     def __init__(self, archive, algorithm='lru:///', serializer='none:///'):
-        self.stash = Stash(archive, algorithm, serializer, hash_key=self.hash_key)
+        self.stash = Stash(archive, algorithm, serializer, key_transform=(self.key_encode, self.key_decode))
 
     @property
     def archive(self):
@@ -43,8 +43,17 @@ class StashBackend(Backend):
         pass
 
     @staticmethod
-    def hash_key(key):
+    def key_encode(key):
         if type(key) is tuple:
             return '/'.join(key)
 
         return key
+
+    @staticmethod
+    def key_decode(key):
+        key = key.split('/')
+
+        if len(key) == 1:
+            return key[0]
+
+        return tuple(key)

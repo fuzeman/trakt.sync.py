@@ -1,2 +1,3 @@
 *.pyc
 examples/*.db
+/tools/data
