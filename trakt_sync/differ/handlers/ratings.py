@@ -1,8 +1,8 @@
 from trakt_sync.differ.handlers.core.base import Handler
 
 
-class Rating(Handler):
-    name = 'rating'
+class Ratings(Handler):
+    name = 'ratings'
 
     def on_added(self, current):
         if current.rating is not None:
