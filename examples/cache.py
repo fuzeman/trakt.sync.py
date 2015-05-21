@@ -58,8 +58,13 @@ if __name__ == '__main__':
         # Refresh cache, print changes
         changes = cache.refresh(username)
 
+        # Resolve changes
         for (m, d), changes in changes:
             print m, d, changes
+
+        # Print items
+        for key, item in cache[('fuzeman-dev', 'movies', 'watched')].iteritems():
+            print key, item
 
         print_details(cache)
 
