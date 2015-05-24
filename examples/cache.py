@@ -1,29 +1,36 @@
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 
-from trakt import Trakt
+from trakt_sync.cache.backends import StashBackend
 from trakt_sync.cache.main import Cache
 
+from stash import ApswArchive
+from trakt import Trakt
+import apsw
 import os
 
 
 def print_details(cache):
-    movies = cache[(username, 'movies')]
-    shows = cache[(username, 'shows')]
+    for key in cache.collections.keys():
+        print 'len(cache[%r]) = %d' % (key, len(cache[key]))
 
-    print 'len(cache[(%r, "movies")]) = %d' % (username, len(movies))
-    print 'len(cache[(%r, "shows")]) = %d ' % (username, len(shows))
+
+def flush(cache):
+    cache.collections.flush()
+
+    for store in cache.stores.values():
+        store.flush()
 
 
 if __name__ == '__main__':
-    # Simple in-memory storage interface
-    data = {}
+    conn = apsw.Connection('cache.db', flags=apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE | apsw.SQLITE_OPEN_WAL)
 
+    # SQLite storage interface for cache
     def storage(name):
-        if name not in data:
-            data[name] = {}
-
-        return data[name]
+        return StashBackend(
+            ApswArchive(conn, name), 'lru:///', 'pickle:///?protocol=2'
+        )
 
     # Configure
     Trakt.configuration.defaults.client(
@@ -48,7 +55,27 @@ if __name__ == '__main__':
     cache = Cache(Cache.Media.All, Cache.Data.All, storage)
 
     while True:
-        cache.refresh(username)
+        # Refresh cache, print changes
+        changes = cache.refresh(username)
+
+        # Resolve changes
+        for (m, d), changes in changes:
+            print m, d, changes
+
+        # Print items
+        for key, item in cache[('fuzeman-dev', 'movies', 'collection')].iteritems():
+            print key, item
 
         print_details(cache)
-        raw_input('[refresh]')
+
+        # Process commands
+        command = raw_input('Command (E[xit], F[lush], R[efresh]): ')
+
+        if command == 'E':
+            break
+        elif command == 'F':
+            # Flush collection/stores to archives
+            flush(cache)
+            break
+        elif command == 'R':
+            continue

@@ -1,2 +1,6 @@
 *.pyc
-examples/*.db
+
+/examples/*.db
+/examples/*.db-shm
+/examples/*.db-wal
+/tools/data

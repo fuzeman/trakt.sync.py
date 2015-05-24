@@ -1,0 +1,28 @@
+[
+  {
+    "collected_at": "2014-09-28T22:45:23.000Z",
+    "movie": {
+      "title": "TRON: Legacy",
+      "year": 2010,
+      "ids": {
+        "trakt": 12601,
+        "slug": "tron-legacy-2010",
+        "imdb": "tt1104001",
+        "tmdb": 20526
+      }
+    }
+  },
+  {
+    "collected_at": "2015-05-07T01:29:23.000Z",
+    "movie": {
+      "title": "Interstellar",
+      "year": 2014,
+      "ids": {
+        "trakt": 102156,
+        "slug": "interstellar-2014",
+        "imdb": "tt0816692",
+        "tmdb": 157336
+      }
+    }
+  }
+]
