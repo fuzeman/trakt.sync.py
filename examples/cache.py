@@ -63,20 +63,19 @@ if __name__ == '__main__':
             print m, d, changes
 
         # Print items
-        for key, item in cache[('fuzeman-dev', 'movies', 'watched')].iteritems():
+        for key, item in cache[('fuzeman-dev', 'movies', 'collection')].iteritems():
             print key, item
 
         print_details(cache)
 
-        # Flush collection/stores to archives
-        flush(cache)
+        # Process commands
+        command = raw_input('Command (E[xit], F[lush], R[efresh]): ')
 
-        command = raw_input('[R, E]: ')
-
-        if command == 'R':
-            continue
-        elif command == 'E':
+        if command == 'E':
             break
-
-    # Flush collection/stores to archives
-    flush(cache)
+        elif command == 'F':
+            # Flush collection/stores to archives
+            flush(cache)
+            break
+        elif command == 'R':
+            continue
