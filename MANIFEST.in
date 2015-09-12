@@ -1,0 +1,5 @@
+recursive-include examples *.py
+recursive-include trakt_sync *.py
+include *
+recursive-exclude tests *
+global-exclude *.iml *.pyc
