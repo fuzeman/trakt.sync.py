@@ -50,12 +50,15 @@ class Media(Enum):
 
 
 class Data(Enum):
-    All         = 0x00
-    Collection  = 0x01
-    Playback    = 0x02
-    Ratings     = 0x04
-    Watched     = 0x08
-    Watchlist   = 0x16
+    All             = 0x00
+    Collection      = 0x01
+    Playback        = 0x02
+    Ratings         = 0x04
+    Watched         = 0x08
+    Watchlist       = 0x16
+
+    ListLiked       = 0x32
+    ListPersonal    = 0x64
 
     __attributes__ = None
     __map__ = None
@@ -85,6 +88,15 @@ class Data(Enum):
             Data.Watchlist: {
                 'interface': 'sync/watchlist',
                 'timestamp': 'watchlisted_at'
+            },
+
+            Data.ListLiked: {
+                'interface': 'users/likes',
+                'timestamp': 'updated_at'
+            },
+            Data.ListPersonal: {
+                'interface': 'users/*/lists',
+                'timestamp': 'updated_at'
             }
         }
 
@@ -96,7 +108,10 @@ class Data(Enum):
                 Data.Playback:      'playback',
                 Data.Ratings:       'ratings',
                 Data.Watched:       'watched',
-                Data.Watchlist:     'watchlist'
+                Data.Watchlist:     'watchlist',
+
+                Data.ListLiked:     ('lists', 'liked'),
+                Data.ListPersonal:  ('lists', 'personal')
             }
 
         return cls.__map__.get(key)
