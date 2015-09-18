@@ -28,11 +28,11 @@ class Enum(object):
 
 
 class Media(Enum):
-    All         = 0x00
-    Movies      = 0x01
-    Shows       = 0x02
-    Seasons     = 0x04
-    Episodes    = 0x08
+    All         = 0
+    Movies      = 1
+    Shows       = 2
+    Seasons     = 4
+    Episodes    = 8
 
     __map__ = None
 
@@ -50,15 +50,15 @@ class Media(Enum):
 
 
 class Data(Enum):
-    All             = 0x00
-    Collection      = 0x01
-    Playback        = 0x02
-    Ratings         = 0x04
-    Watched         = 0x08
-    Watchlist       = 0x16
+    All             = 0
+    Collection      = 1
+    Playback        = 2
+    Ratings         = 4
+    Watched         = 8
+    Watchlist       = 16
 
-    ListLiked       = 0x32
-    ListPersonal    = 0x64
+    ListLiked       = 32
+    ListPersonal    = 64
 
     __attributes__ = None
     __map__ = None
