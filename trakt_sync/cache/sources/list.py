@@ -11,17 +11,25 @@ log = logging.getLogger(__name__)
 
 class ListSource(Source):
     def refresh(self, username):
-        # Refresh liked lists
-        for l in Trakt['users'].likes('lists'):
-            # Process list, yield results
-            for item in self.refresh_list(username, enums.Data.ListLiked, l):
-                yield item
+        # Refresh liked lists, yield changes
+        for change in self.refresh_lists(username, enums.Data.ListLiked, Trakt['users'].likes('lists')):
+            yield change
 
-        # Refresh personal lists
-        for l in Trakt['users/*/lists'].get(username):
-            # Process list, yield results
-            for item in self.refresh_list(username, enums.Data.ListPersonal, l):
-                yield item
+        # Refresh personal lists, yield changes
+        for change in self.refresh_lists(username, enums.Data.ListPersonal, Trakt['users/*/lists'].get(username)):
+            yield change
+
+    def refresh_lists(self, username, data, lists):
+        # Store lists in cache
+        self.update_store((username, data), dict([
+            (t_list.id, t_list)
+            for t_list in lists
+        ]))
+
+        # Store list items in cache, yield changes
+        for l in lists:
+            for change in self.refresh_list(username, data, l):
+                yield change
 
     def refresh_list(self, username, data, t_list):
         collection = self.get_collection(username, data, t_list.id)
@@ -62,7 +70,7 @@ class ListSource(Source):
 
         yield (None, enums.Data.ListLiked), None
 
-    def get_collection(self, username, data, id):
+    def get_collection(self, username, data, id=None):
         key = self._storage_key(username, data, id)
 
         return super(ListSource, self).get_collection(*key)
@@ -94,9 +102,11 @@ class ListSource(Source):
         raise ValueError('Unknown item: %r', t_item)
 
     @classmethod
-    def _storage_key(cls, username, data, id):
+    def _storage_key(cls, username, data, id=None):
         result = [username]
         result.extend(enums.Data.get(data))
-        result.append(str(id))
+
+        if id:
+            result.append(str(id))
 
         return tuple(result)
