@@ -1,0 +1,40 @@
+[
+  {
+    "rated_at": "2014-11-01T00:26:18.000Z",
+    "rating": 10,
+    "season": {
+      "number": 1
+    },
+    "show": {
+      "title": "The Office",
+      "year": 2005,
+      "ids": {
+        "trakt": 2302,
+        "slug": "the-office",
+        "tvdb": 73244,
+        "imdb": "tt0386676",
+        "tmdb": 2316,
+        "tvrage": null
+      }
+    }
+  },
+  {
+    "rated_at": "2014-10-19T23:02:23.000Z",
+    "rating": 9,
+    "season": {
+      "number": 2
+    },
+    "show": {
+      "title": "Chuck",
+      "year": 2007,
+      "ids": {
+        "trakt": 1395,
+        "slug": "chuck",
+        "tvdb": 80348,
+        "imdb": "tt0934814",
+        "tmdb": 1404,
+        "tvrage": 15614
+      }
+    }
+  }
+]

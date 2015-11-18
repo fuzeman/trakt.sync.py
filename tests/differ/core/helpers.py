@@ -18,6 +18,7 @@ def load(directory, media):
         process(store, directory + '/collection', 'shows', is_collected=True)
         process(store, directory + '/playback', 'episodes')
         process(store, directory + '/ratings', 'episodes')
+        process(store, directory + '/ratings', 'seasons')
         process(store, directory + '/ratings', 'shows')
         process(store, directory + '/watched', 'shows', is_watched=True)
     elif media == 'movies':

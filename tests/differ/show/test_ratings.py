@@ -40,6 +40,19 @@ def test_added(changes):
     })
 
     assert_matches(changes['ratings']['added'], [
+        ('imdb', 'tt0934814'),
+        ('tmdb', '1404'),
+        ('tvdb', '80348'),
+        ('tvrage', '15614'),
+    ], {
+        'seasons': {
+            2: {
+                   'rating': trakt.objects.Rating(Trakt, 9, datetime.datetime(2014, 10, 19, 23, 02, 23, tzinfo=tzutc()))
+            }
+        }
+    })
+
+    assert_matches(changes['ratings']['added'], [
         ('imdb', 'tt0496424'),
         ('tmdb', '4608'),
         ('tvdb', '79488'),
@@ -78,6 +91,12 @@ def test_changed(changes):
             trakt.objects.Rating(Trakt, 8, datetime.datetime(2014, 11, 1, 0, 26, 18, tzinfo=tzutc()))
         ),
         'seasons': {
+            1: {
+                'rating': (
+                    trakt.objects.Rating(Trakt, 8, datetime.datetime(2014, 11, 1, 0, 26, 18, tzinfo=tzutc())),
+                    trakt.objects.Rating(Trakt, 10, datetime.datetime(2014, 11, 1, 0, 26, 18, tzinfo=tzutc()))
+                ),
+            },
             4: {
                 'episodes': {
                     1: {'rating': (
@@ -125,4 +144,14 @@ def test_removed(changes):
         ('tvrage', '31369')
     ], {
         'rating': trakt.objects.Rating(Trakt, 6, datetime.datetime(2014, 5, 10, 0, 23, 37, tzinfo=tzutc()))
+    })
+
+    assert_matches(changes['ratings']['removed'], [
+
+    ], {
+        'seasons': {
+            1: {
+                'rating': trakt.objects.Rating(Trakt, 10, datetime.datetime(2014, 10, 19, 23, 2, 23, tzinfo=tzutc()))
+            }
+        }
     })
