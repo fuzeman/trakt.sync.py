@@ -11,8 +11,8 @@ import trakt.objects
 @pytest.fixture(scope="module")
 def changes():
     # Load stores
-    base = load('test_show/base', 'shows')
-    current = load('test_show/current', 'shows')
+    base = load('show/base', 'shows')
+    current = load('show/current', 'shows')
 
     # Compare items
     differ = ShowDiffer()

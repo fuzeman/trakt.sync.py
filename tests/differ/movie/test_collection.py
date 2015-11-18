@@ -9,8 +9,8 @@ import pytest
 @pytest.fixture(scope="module")
 def changes():
     # Load stores
-    base = load('test_movie/base', 'movies')
-    current = load('test_movie/current', 'movies')
+    base = load('movie/base', 'movies')
+    current = load('movie/current', 'movies')
 
     # Compare items
     differ = MovieDiffer()
