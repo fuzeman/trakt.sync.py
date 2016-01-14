@@ -23,12 +23,12 @@ class ListSource(Source):
             return
 
         # Emit "started" event
-        self.events.emit('refresh.list.started', steps=self.steps())
+        self.events.emit('refresh.list.started', source='list', total=self.steps())
         current = 0
 
         if enums.Data.Liked in self.data:
             # Update `current` progress, emit "progress" event
-            self.events.emit('refresh.list.progress', current=current)
+            self.events.emit('refresh.list.progress', source='list', current=current)
             current += 1
 
             # Refresh liked lists, yield changes
@@ -37,7 +37,7 @@ class ListSource(Source):
 
         if enums.Data.Personal in self.data:
             # Update `current` progress, emit "progress" event
-            self.events.emit('refresh.list.progress', current=current)
+            self.events.emit('refresh.list.progress', source='list', current=current)
             current += 1
 
             # Refresh personal lists, yield changes
@@ -45,7 +45,7 @@ class ListSource(Source):
                 yield change
 
         # Emit "finished" event
-        self.events.emit('refresh.list.finished', current=current)
+        self.events.emit('refresh.list.finished', source='list', current=current)
 
     def refresh_lists(self, username, data, lists):
         key = (enums.Media.Lists, data)

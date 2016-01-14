@@ -34,7 +34,7 @@ class SyncSource(Source):
 
     def refresh(self, username):
         # Emit "started" event
-        self.events.emit('refresh.sync.started', steps=self.steps())
+        self.events.emit('refresh.sync.started', source='sync', total=self.steps())
         current = 0
 
         # Fetch sync activity timestamps
@@ -52,7 +52,7 @@ class SyncSource(Source):
                     continue
 
                 # Update `current` progress, emit "progress" event
-                self.events.emit('refresh.sync.progress', current=current)
+                self.events.emit('refresh.sync.progress', source='sync', current=current)
                 current += 1
 
                 # Retrieve collection from database
@@ -96,7 +96,7 @@ class SyncSource(Source):
                 yield self._collection_key(m, d), changes
 
         # Emit "finished" event
-        self.events.emit('refresh.sync.finished', current=current)
+        self.events.emit('refresh.sync.finished', source='sync', current=current)
 
     def steps(self):
         result = 0
