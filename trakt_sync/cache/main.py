@@ -1,4 +1,5 @@
 from trakt_sync.cache.sources import ListSource, SyncSource
+from pyemitter import Emitter
 import trakt_sync.cache.enums as enums
 
 import logging
@@ -14,6 +15,7 @@ class Cache(object):
         self.storage = storage
 
         self.collections = self.storage('collections')
+        self.events = Emitter()
         self.stores = {}
 
         self.media = Cache.Media.parse(media)

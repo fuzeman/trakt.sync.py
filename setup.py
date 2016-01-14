@@ -18,7 +18,8 @@ setup(
     platforms='any',
 
     install_requires=[
-        'trakt.py'
+        'trakt.py',
+        'pyemitter'
     ],
 
     classifiers=[
