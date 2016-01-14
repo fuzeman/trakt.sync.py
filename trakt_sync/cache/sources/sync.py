@@ -35,7 +35,7 @@ class SyncSource(Source):
     def refresh(self, username):
         # Emit "started" event
         self.events.emit('refresh.sync.started', source='sync', total=self.steps())
-        current = 0
+        current_step = 0
 
         # Fetch sync activity timestamps
         activities = Trakt['sync'].last_activities(exceptions=True)
@@ -52,8 +52,8 @@ class SyncSource(Source):
                     continue
 
                 # Update `current` progress, emit "progress" event
-                self.events.emit('refresh.sync.progress', source='sync', current=current)
-                current += 1
+                self.events.emit('refresh.sync.progress', source='sync', current=current_step)
+                current_step += 1
 
                 # Retrieve collection from database
                 collection = self.get_collection(username, media, data)
@@ -96,7 +96,7 @@ class SyncSource(Source):
                 yield self._collection_key(m, d), changes
 
         # Emit "finished" event
-        self.events.emit('refresh.sync.finished', source='sync', current=current)
+        self.events.emit('refresh.sync.finished', source='sync', current=current_step)
 
     def steps(self):
         result = 0
