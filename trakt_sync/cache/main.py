@@ -39,6 +39,9 @@ class Cache(object):
             for result in source.refresh(username):
                 yield result
 
+    def source(self, key):
+        return self._sources.get(key)
+
     def _get_collection(self, username, *args):
         key = tuple([username] + list(args))
 
