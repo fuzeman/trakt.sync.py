@@ -1,7 +1,7 @@
 from trakt_sync.differ.core.base import Differ
 from trakt_sync.differ.core.helpers import dict_path
 from trakt_sync.differ.core.result import Result
-from trakt_sync.differ.handlers import Collection, Playback, Ratings, Watched
+from trakt_sync.differ.handlers import Collection, Playback, Ratings, Watched, Watchlist
 
 
 class ShowDiffer(Differ):
@@ -10,7 +10,8 @@ class ShowDiffer(Differ):
 
         self.handlers = [
             h(self) for h in [
-                Ratings
+                Ratings,
+                Watchlist
             ]
         ]
 
@@ -18,7 +19,7 @@ class ShowDiffer(Differ):
         keys_base = set(base.keys())
         keys_current = set(current.keys())
 
-        result = ShowResult()
+        result = ShowResult(self)
 
         for key in keys_current - keys_base:
             actions = self.process_added(current[key], handlers=handlers)
@@ -63,7 +64,8 @@ class SeasonDiffer(Differ):
 
         self.handlers = [
             h(self) for h in [
-                Ratings
+                Ratings,
+                Watchlist
             ]
         ]
 
@@ -72,7 +74,7 @@ class SeasonDiffer(Differ):
         keys_current = set(current.keys())
 
         if result is None:
-            result = ShowResult()
+            result = ShowResult(self)
 
         for key in keys_current - keys_base:
             actions = self.process_added(current[key], handlers=handlers)
@@ -109,7 +111,8 @@ class SeasonDiffer(Differ):
             cls.store_season_action(result, season, *action)
 
     @classmethod
-    def store_season_action(cls, result, season, key, collection, action, properties=None):
+    def store_season_action(cls, result, season, keys, collection, action, properties=None):
+        season_num = keys[0]
         show = season.show
 
         # Store action in `result`
@@ -119,7 +122,7 @@ class SeasonDiffer(Differ):
             'seasons',
         ))
 
-        seasons[key] = properties
+        seasons[season_num] = properties
 
         # Update episode metrics
         Differ.increment_metric(result.metrics.seasons, collection, action)
@@ -132,7 +135,8 @@ class EpisodeDiffer(Differ):
                 Collection,
                 Playback,
                 Ratings,
-                Watched
+                Watched,
+                Watchlist
             ]
         ]
 
@@ -141,7 +145,7 @@ class EpisodeDiffer(Differ):
         keys_current = set(current.keys())
 
         if result is None:
-            result = ShowResult()
+            result = ShowResult(self)
 
         for key in keys_current - keys_base:
             actions = self.process_added(current[key], handlers=handlers)
@@ -166,8 +170,8 @@ class EpisodeDiffer(Differ):
             cls.store_episode_action(result, episode, *action)
 
     @classmethod
-    def store_episode_action(cls, result, episode, key, collection, action, properties=None):
-        season_num, episode_num = key[0]
+    def store_episode_action(cls, result, episode, keys, collection, action, properties=None):
+        season_num, episode_num = keys[0]
         show = episode.show
 
         # Store action in `result`
@@ -185,8 +189,8 @@ class EpisodeDiffer(Differ):
 
 
 class ShowResult(Result):
-    def __init__(self):
-        super(ShowResult, self).__init__()
+    def __init__(self, differ):
+        super(ShowResult, self).__init__(differ)
 
         self.metrics = ShowMetrics()
 

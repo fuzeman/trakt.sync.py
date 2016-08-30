@@ -59,8 +59,8 @@ if __name__ == '__main__':
         changes = cache.refresh(username)
 
         # Resolve changes
-        for (m, d), changes in changes:
-            print m, d, changes
+        for key, result in changes:
+            print '[%s] %r' % (key, result.changes)
 
         # Print items
         for key, item in cache[('fuzeman-dev', 'movies', 'collection')].iteritems():
