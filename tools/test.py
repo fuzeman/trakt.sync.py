@@ -15,7 +15,7 @@ def read_json(path):
 
 
 def process(store, path, **flags):
-    SyncMapper.process(store, read_json(path), 'movies', **flags)
+    SyncMapper.process(None, store, read_json(path), 'movies', **flags)
 
 
 def load(name):
