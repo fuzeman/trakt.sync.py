@@ -1,1 +1,2 @@
-git+git://github.com/fuzeman/trakt.py.git
+trakt.py>=2.12.0
+PyEmitter>=1.2.1

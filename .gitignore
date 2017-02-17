@@ -1,6 +1,8 @@
 /.idea
 /build
+/dist
 /tools/data
+/*.egg-info
 
 /examples/*.db
 /examples/*.db-shm
